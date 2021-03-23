@@ -13,4 +13,4 @@ const dbConnexion = require("./database/connexion");
     app.listen(port, () => {
         console.log(`Movies app listening at http://localhost:${port}`)
     });
-})();
+})(); 

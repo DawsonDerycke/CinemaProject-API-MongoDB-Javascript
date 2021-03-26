@@ -1,7 +1,7 @@
 const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://localhost:27017';
-const dbName = 'p_sgbd';
+const dbName = 'p_movies';
 
 const getDb = async () => {
     let db;

@@ -5,7 +5,9 @@ const port = 3000;
 const dbConnexion = require("./database/connexion");
 
 app.use(bodyParser.urlencoded({ extended: true }));
+
 const users = require('./controllers/users');
+const movies = require('./controllers/movies');
 
 
 (async () => {
@@ -13,6 +15,7 @@ const users = require('./controllers/users');
 
     // Controllers
     users(app, db);
+    movies(app, db);
 
     app.get('/', (req, res) => {
         res.send('Hello World!')

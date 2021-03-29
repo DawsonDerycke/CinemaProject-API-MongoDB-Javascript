@@ -1,4 +1,3 @@
-const { response } = require('express');
 const { Db, ObjectID } = require('mongodb');
 
 module.exports = (app, db) => {

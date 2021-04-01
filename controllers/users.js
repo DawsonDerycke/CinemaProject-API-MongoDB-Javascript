@@ -29,13 +29,20 @@ module.exports = (app, db) => {
     // Ajouter un utilisateur
     app.post('/users', async (req, res) => {
         const data = req.body;
-        const response = await userCollection.insertOne(data);
+        try {
+            data.ticket = data.ticket === 'true';
+            data.year = parseInt(data.year);
+            const response = await userCollection.insertOne(data);
 
-        if (response.result.n !== 1 || response.result.ok !== 1) {
-            return res.status(400).json({ error: 'Impossible to create the user !' });
-        };
+            if (response.result.n !== 1 || response.result.ok !== 1) {
+                return res.status(400).json({ error: 'Impossible to create the user !' });
+            };
 
-        res.json(response.ops[0]);
+            res.json(response.ops[0]);
+        } catch (e) {
+            console.error(e);
+            return res.status(404).json({ error: 'Impossible to create the user !' });
+        }
     });
 
     // Mettre à jour un utilisateur
@@ -66,7 +73,7 @@ module.exports = (app, db) => {
             return res.status(404).send({ error: 'Impossible to remove this user !' });
         };
 
-        res.status(204).send(); 
+        res.status(204).send();
     });
 
 };

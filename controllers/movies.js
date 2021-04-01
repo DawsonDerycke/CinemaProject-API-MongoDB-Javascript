@@ -1,4 +1,4 @@
-const { Db, ObjectID } = require('mongodb');
+const { Db, ObjectID, Double } = require('mongodb');
 
 module.exports = (app, db) => {
     if (!(db instanceof Db)) {
@@ -29,13 +29,21 @@ module.exports = (app, db) => {
     // Ajouter un film
     app.post('/movies', async (req, res) => {
         const data = req.body;
-        const response = await movieCollection.insertOne(data);
+        try {
+            data.price = Double(data.price);
+            data.releaseDate = new Date(data.releaseDate);
+            const response = await movieCollection.insertOne(data);
+            console.log(data);
+            
+            if (response.result.n !== 1 || response.result.ok !== 1) {
+                return res.status(400).json({ error: 'Impossible to create the movie !' });
+            };
 
-        if (response.result.n !== 1 || response.result.ok !== 1) {
-            return res.status(400).json({ error: 'Impossible to create the movie !' });
-        };
-
-        res.json(response.ops[0]);
+            res.json(response.ops[0]);
+        } catch (e) {
+            console.error(e);
+            return res.status(404).json({ error: 'Impossible to create the user !' });
+        }
     });
 
     // Mettre à jour un film

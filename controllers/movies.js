@@ -30,7 +30,11 @@ module.exports = (app, db) => {
     app.post('/movies', async (req, res) => {
         const data = req.body;
         try {
-            data.price = Double(data.price);
+            
+            // Résoudre erreur contrainte -> Double
+            data.price = parseInt(data.price); 
+
+            // Trouver la variable du sous doc -> data.notesClients[note]
             data.releaseDate = new Date(data.releaseDate);
             const response = await movieCollection.insertOne(data);
             console.log(data);

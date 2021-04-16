@@ -30,15 +30,15 @@ module.exports = (app, db) => {
     app.post('/movies', async (req, res) => {
         const data = req.body;
         try {
-            
+
             // Résoudre erreur contrainte -> Double
-            data.price = parseInt(data.price); 
+            data.price = parseInt(data.price);
 
             // Trouver la variable du sous doc -> data.notesClients[note]
             data.releaseDate = new Date(data.releaseDate);
             const response = await movieCollection.insertOne(data);
             console.log(data);
-            
+
             if (response.result.n !== 1 || response.result.ok !== 1) {
                 return res.status(400).json({ error: 'Impossible to create the movie !' });
             };
@@ -81,10 +81,27 @@ module.exports = (app, db) => {
         res.status(204).send();
     });
 
-    // Lister les notes
-    app.get('/movies/:movieId/notesClients', async (req, res) => {
+    // Lister les films qui sont sortie ?? releaseDate = now() ?
+    app.get('/releasedNow/movies', async (req, res) => {
+        const reponse = await movieCollection.aggregate([
+            
+        ]).toArray();
 
-        res.json({ ok: 'ok' });
+        res.json(reponse);
+    });
+
+    // Lister les notes d'un film
+    app.get('/movies/:movieId/notesClients', async (req, res) => {
+        const { movieId } = req.params;
+
+        const notesClients = await movieCollection.aggregate([
+            { $match: { _id: new ObjectID(movieId) } },
+            { $unwind: '$notesClients' },
+            { $replaceRoot: { newRoot: '$notesClients' } },
+
+        ]).toArray();
+
+        res.json(notesClients);
     });
 
     // Ajouter une note

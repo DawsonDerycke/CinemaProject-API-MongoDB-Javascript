@@ -76,4 +76,16 @@ module.exports = (app, db) => {
         res.status(204).send();
     });
 
+    // Lister les tickets utilisés
+    app.get('/ticketFalse/users', async (req, res) => {
+        const response = await userCollection.aggregate([
+            { $match: { ticket: false } },
+        ]).toArray();
+
+        // Supprimer les utilisateurs qui correspondent à la recherche
+
+        res.json(response);
+
+    });
+
 };

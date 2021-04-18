@@ -15,9 +15,8 @@ module.exports = async (db) => {
                         bsonType: 'string',
                         description: 'must be a string and is required'
                     },
-                    //résoudre erreur contrainte -> Double 
                     price: { 
-                        bsonType: 'int', 
+                        bsonType: 'double', 
                         description: 'must be a double and is required'
                     },
                     yearRequired: {
@@ -36,8 +35,7 @@ module.exports = async (db) => {
                             required: ["note"], 
                             properties: {
                                 note: {
-                                    //Erreur contrainte -> int
-                                    bsonType: 'string',
+                                    bsonType: 'double',
                                     minimum: 0,
                                     maximum: 5, 
                                     description: 'must be an integer in [ 0, 5 ] and is required'

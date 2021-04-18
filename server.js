@@ -8,6 +8,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const users = require('./controllers/users');
 const movies = require('./controllers/movies');
+const categories = require('./controllers/categories');
 
 
 (async () => {
@@ -16,6 +17,7 @@ const movies = require('./controllers/movies');
     // Controllers
     users(app, db);
     movies(app, db);
+    categories(app, db);
 
     app.get('/', (req, res) => {
         res.send('Hello World!')

@@ -30,14 +30,11 @@ module.exports = (app, db) => {
     app.post('/movies', async (req, res) => {
         const data = req.body;
         try {
-
-            // Résoudre erreur contrainte -> Double
-            data.price = parseInt(data.price);
-
-            // Trouver la variable du sous doc -> data.notesClients[note]
+            data.price = Double(data.price);
             data.releaseDate = new Date(data.releaseDate);
+            data.note = Double(data.notesClients);
+            console.log(data.note);
             const response = await movieCollection.insertOne(data);
-            console.log(data);
 
             if (response.result.n !== 1 || response.result.ok !== 1) {
                 return res.status(400).json({ error: 'Impossible to create the movie !' });
@@ -84,7 +81,7 @@ module.exports = (app, db) => {
     // Lister les films qui sont sortie ?? releaseDate = now() ?
     app.get('/releasedNow/movies', async (req, res) => {
         const reponse = await movieCollection.aggregate([
-            
+
         ]).toArray();
 
         res.json(reponse);

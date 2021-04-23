@@ -30,10 +30,15 @@ module.exports = (app, db) => {
     app.post('/movies', async (req, res) => {
         const data = req.body;
         try {
+            if (data.customersRatings) {
+                data.customersRatings = data.customersRatings.map(c => {
+                    c.rating = Double(c.rating);
+                    return c;
+                });
+            }
             data.price = Double(data.price);
             data.releaseDate = new Date(data.releaseDate);
-            data.note = Double(data.notesClients);
-            console.log(data.note);
+
             const response = await movieCollection.insertOne(data);
 
             if (response.result.n !== 1 || response.result.ok !== 1) {
@@ -43,7 +48,7 @@ module.exports = (app, db) => {
             res.json(response.ops[0]);
         } catch (e) {
             console.error(e);
-            return res.status(404).json({ error: 'Impossible to create the user !' });
+            return res.status(404).json({ error: 'Impossible to create the movie !' });
         }
     });
 
@@ -52,6 +57,14 @@ module.exports = (app, db) => {
         const { movieId } = req.params;
         const data = req.body;
         const _id = new ObjectID(movieId);
+        if (data.customersRatings) {
+            data.customersRatings = data.customersRatings.map(c => {
+                c.rating = Double(c.rating);
+                return c;
+            });
+        }
+        data.price = Double(data.price);
+        data.releaseDate = new Date(data.releaseDate);
 
         const response = await movieCollection.findOneAndUpdate(
             { _id },
@@ -88,31 +101,32 @@ module.exports = (app, db) => {
     });
 
     // Lister les notes d'un film
-    app.get('/movies/:movieId/notesClients', async (req, res) => {
+    app.get('/movies/:movieId/customersRatings', async (req, res) => {
         const { movieId } = req.params;
 
-        const notesClients = await movieCollection.aggregate([
+        const customersRatings = await movieCollection.aggregate([
             { $match: { _id: new ObjectID(movieId) } },
-            { $unwind: '$notesClients' },
-            { $replaceRoot: { newRoot: '$notesClients' } },
+            { $unwind: '$customersRatings' },
+            { $replaceRoot: { newRoot: '$customersRatings' } },
 
         ]).toArray();
 
-        res.json(notesClients);
+        res.json(customersRatings);
     });
 
+    /* à refaire
     // Ajouter une note
-    app.post('/movies/:movieId/notesClients', async (req, res) => {
+    app.post('/movies/:movieId/customersRatings', async (req, res) => {
         const { movieId } = req.params;
-        const { note } = req.body;
+        const { rating } = req.body;
         const _id = new ObjectID(movieId);
 
         const { value } = await movieCollection.findOneAndUpdate(
             { _id },
             {
                 $push: {
-                    notesClients: {
-                        note,
+                    customersRatings: {
+                        rating,
                         _id: new ObjectID()
                     }
                 }
@@ -124,16 +138,16 @@ module.exports = (app, db) => {
     });
 
     // Supprimer une note
-    app.delete('/movies/:movieId/notesClients/:noteId', async (req, res) => {
-        const { movieId, noteId } = req.params;
+    app.delete('/movies/:movieId/customersRatings/:ratingId', async (req, res) => {
+        const { movieId, ratingId } = req.params;
         const _id = new ObjectID(movieId);
-        const _noteId = new ObjectID(noteId);
+        const _ratingId = new ObjectID(ratingId);
 
         const { value } = await movieCollection.findOneAndUpdate(
             { _id },
             {
                 $pull: {
-                    notesClients: { _id: _noteId }
+                    customersRatings: { _id: _ratingId }
                 }
             },
             { returnOriginal: false },
@@ -143,26 +157,26 @@ module.exports = (app, db) => {
     });
 
     // Modifier une note
-    app.post('/movies/:movieId/notesClients/:noteId', async (req, res) => {
-        const { movieId, noteId } = req.params;
-        const { note } = req.body;
+    app.post('/movies/:movieId/customersRatings/:ratingId', async (req, res) => {
+        const { movieId, ratingId } = req.params;
+        const { rating } = req.body;
         const _id = new ObjectID(movieId);
-        const _noteId = new ObjectID(noteId);
+        const _ratingId = new ObjectID(ratingId);
 
         const { value } = await movieCollection.findOneAndUpdate(
             {
                 _id,
-                'notesClients._id': _noteId
+                'customersRatings._id': _ratingId
             },
             {
                 $set: {
-                    'notesClients.$.note': note,
+                    'customersRatings.$.rating': rating,
                 },
             },
             { returnOriginal: false },
         );
 
         res.json(value);
-    });
+    });*/
 
 };

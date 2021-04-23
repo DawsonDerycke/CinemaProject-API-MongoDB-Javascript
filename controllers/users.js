@@ -30,8 +30,7 @@ module.exports = (app, db) => {
     app.post('/users', async (req, res) => {
         const data = req.body;
         try {
-            data.ticket = data.ticket === 'true';
-            data.year = parseInt(data.year);
+
             const response = await userCollection.insertOne(data);
 
             if (response.result.n !== 1 || response.result.ok !== 1) {
@@ -50,7 +49,7 @@ module.exports = (app, db) => {
         const { userId } = req.params;
         const data = req.body;
         const _id = new ObjectID(userId);
-
+       
         const response = await userCollection.findOneAndUpdate(
             { _id },
             { $set: data },
@@ -74,18 +73,6 @@ module.exports = (app, db) => {
         };
 
         res.status(204).send();
-    });
-
-    // Lister les tickets utilisés
-    app.get('/ticketFalse/users', async (req, res) => {
-        const response = await userCollection.aggregate([
-            { $match: { ticket: false } },
-        ]).toArray();
-
-        // Supprimer les utilisateurs qui correspondent à la recherche
-
-        res.json(response);
-
     });
 
 };

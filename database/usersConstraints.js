@@ -9,25 +9,15 @@ module.exports = async (db) => {
         validator: {
             $jsonSchema: {
                 bsonType: 'object',
-                required: ['firstName', 'year', 'seat', 'ticket'],
+                required: ['username', 'password'],
                 properties: {
-                    firstName: {
+                    username: {
                         bsonType: 'string',
                         description: 'must be a string and is required'
                     },
-                    year: {
-                        bsonType: 'int',
-                        minimum: 1,
-                        maximum: 120,
-                        description: 'must be an integer in [ 1, 120 ] and is required'
-                    },
-                    seat: {
+                    password: { 
                         bsonType: 'string',
                         description: 'must be a string and is required'
-                    },
-                    ticket: {
-                        bsonType: 'bool',
-                        description: 'must be a bool and is required'
                     },
                 },
             },

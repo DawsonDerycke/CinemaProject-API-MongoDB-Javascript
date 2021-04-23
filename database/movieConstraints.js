@@ -27,14 +27,14 @@ module.exports = async (db) => {
                         bsonType: 'date',
                         description: 'must be a date and is required'
                     },
-                    notesClients: {
+                    customersRatings: {
                         bsonType: "array",
                         additionalProperties: false,
                         items: { 
                             bsonType: "object",
-                            required: ["note"], 
+                            required: ["rating"], 
                             properties: {
-                                note: {
+                                rating: {
                                     bsonType: 'double',
                                     minimum: 0,
                                     maximum: 5, 

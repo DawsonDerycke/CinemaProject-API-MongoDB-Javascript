@@ -6,18 +6,20 @@ const dbConnexion = require("./database/connexion");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const users = require('./controllers/users');
+const customers = require('./controllers/customers');
 const movies = require('./controllers/movies');
 const categories = require('./controllers/categories');
+const users = require('./controllers/users');
 
 
 (async () => {
     const db = await dbConnexion();
 
     // Controllers
-    users(app, db);
+    customers(app, db);
     movies(app, db);
     categories(app, db);
+    users(app, db);
 
     app.get('/', (req, res) => {
         res.send('Hello World!')

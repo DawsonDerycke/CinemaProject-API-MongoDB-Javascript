@@ -50,6 +50,7 @@ module.exports = (app, db) => {
         const { categoryId } = req.params;
         const data = req.body;
         const _id = new ObjectID(categoryId);
+        data.duration = parseInt(data.duration);
 
         const response = await categCollection.findOneAndUpdate(
             { _id },

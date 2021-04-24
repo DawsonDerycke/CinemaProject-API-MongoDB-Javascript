@@ -7,14 +7,14 @@ module.exports = (app, db) => {
     const customerCollection = db.collection('customers');
 
     // Lister les clients
-    app.get('/customers', async (req, res) => {
+    app.get('/api/customers', async (req, res) => {
         const customers = await customerCollection.find().toArray();
 
         res.json(customers);
     });
 
     // Lister un client
-    app.get('/customers/:customerId', async (req, res) => {
+    app.get('/api/customers/:customerId', async (req, res) => {
         const { customerId } = req.params;
         const _id = new ObjectID(customerId);
 
@@ -27,7 +27,7 @@ module.exports = (app, db) => {
     });
 
     // Ajouter un client
-    app.post('/customers', async (req, res) => {
+    app.post('/api/customers', async (req, res) => {
         const data = req.body;
         try {
             data.ticket = data.ticket === 'true';
@@ -47,7 +47,7 @@ module.exports = (app, db) => {
     });
 
     // Mettre à jour un client
-    app.post('/customers/:customerId', async (req, res) => {
+    app.post('/api/customers/:customerId', async (req, res) => {
         const { customerId } = req.params;
         const data = req.body;
         const _id = new ObjectID(customerId);
@@ -67,7 +67,7 @@ module.exports = (app, db) => {
     });
 
     // Supprimer un client
-    app.delete('/customers/:customerId', async (req, res) => {
+    app.delete('/api/customers/:customerId', async (req, res) => {
         const { customerId } = req.params;
         const _id = new ObjectID(customerId);
 
@@ -80,7 +80,7 @@ module.exports = (app, db) => {
     });
 
     // Lister les tickets utilisés
-    app.get('/ticketFalse/customers', async (req, res) => {
+    app.get('/api/ticketFalse/customers', async (req, res) => {
         const response = await customerCollection.aggregate([
             { $match: { ticket: false } },
         ]).toArray();

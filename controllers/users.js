@@ -1,4 +1,10 @@
 const { Db, ObjectID } = require('mongodb');
+const bcrypt = require('bcrypt');
+const passport = require('passport');
+// Permet de ne jamais avoir le même mot de passe
+const saltRounds = 10;
+const jwt = require('jsonwebtoken');
+const signature = 'Signature|@Projet147';
 
 module.exports = (app, db) => {
     if (!(db instanceof Db)) {
@@ -6,15 +12,38 @@ module.exports = (app, db) => {
     };
     const userCollection = db.collection('users');
 
+    app.post('/login', async (req, res) => {
+        passport.authenticate('local', { session: false }, (err, user) => {
+            if (err || !user) {
+                return res.status(400).json({
+                    message: 'Something is not right',
+                    user: user,
+                });
+            }
+            req.login(user, { session: false }, (err) => {
+                if (err) {
+                    return res.send(err);
+                }
+                delete user.password;
+
+                const token = jwt.sign(user, signature);
+
+                return res.json({user, token});
+
+            });
+        })(req, res);
+
+    });
+
     // Lister les utilisateurs
-    app.get('/users', async (req, res) => {
+    app.get('/api/users', async (req, res) => {
         const users = await userCollection.find().toArray();
 
         res.json(users);
     });
 
     // Lister un utilisateur
-    app.get('/users/:userId', async (req, res) => {
+    app.get('/api/users/:userId', async (req, res) => {
         const { userId } = req.params;
         const _id = new ObjectID(userId);
 
@@ -27,15 +56,17 @@ module.exports = (app, db) => {
     });
 
     // Ajouter un utilisateur
-    app.post('/users', async (req, res) => {
+    app.post('/api/users', async (req, res) => {
         const data = req.body;
         try {
+            data.password = bcrypt.hashSync(data.password, saltRounds);
 
             const response = await userCollection.insertOne(data);
 
             if (response.result.n !== 1 || response.result.ok !== 1) {
                 return res.status(400).json({ error: 'Impossible to create the user !' });
             };
+            delete data.password;
 
             res.json(response.ops[0]);
         } catch (e) {
@@ -45,11 +76,12 @@ module.exports = (app, db) => {
     });
 
     // Mettre à jour un utilisateur
-    app.post('/users/:userId', async (req, res) => {
+    app.post('/api/users/:userId', async (req, res) => {
         const { userId } = req.params;
         const data = req.body;
         const _id = new ObjectID(userId);
-       
+        data.password = bcrypt.hashSync(data.password, saltRounds);
+
         const response = await userCollection.findOneAndUpdate(
             { _id },
             { $set: data },
@@ -58,12 +90,13 @@ module.exports = (app, db) => {
         if (response.ok !== 1) {
             return res.status(400).json({ error: 'Impossible to update the user !' });
         }
+        delete response.value.password;
 
         res.json(response.value);
     });
 
     // Supprimer un utilisateur
-    app.delete('/users/:userId', async (req, res) => {
+    app.delete('/api/users/:userId', async (req, res) => {
         const { userId } = req.params;
         const _id = new ObjectID(userId);
 

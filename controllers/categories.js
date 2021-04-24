@@ -7,14 +7,14 @@ module.exports = (app, db) => {
     const categCollection = db.collection('categories');
 
     // Lister les catégories
-    app.get('/categories', async (req, res) => {
+    app.get('/api/categories', async (req, res) => {
         const categories = await categCollection.find().toArray();
 
         res.json(categories);
     });
 
     // Lister une catégorie
-    app.get('/categories/:categoryId', async (req, res) => {
+    app.get('/api/categories/:categoryId', async (req, res) => {
         const { categoryId } = req.params;
         const _id = new ObjectID(categoryId);
 
@@ -27,7 +27,7 @@ module.exports = (app, db) => {
     });
 
     // Ajouter une catégorie
-    app.post('/categories', async (req, res) => {
+    app.post('/api/categories', async (req, res) => {
         const data = req.body; 
         try {
             data.duration = parseInt(data.duration);
@@ -46,7 +46,7 @@ module.exports = (app, db) => {
     });
 
     // Mettre à jour une catégorie
-    app.post('/categories/:categoryId', async (req, res) => {
+    app.post('/api/categories/:categoryId', async (req, res) => {
         const { categoryId } = req.params;
         const data = req.body;
         const _id = new ObjectID(categoryId);
@@ -65,7 +65,7 @@ module.exports = (app, db) => {
     });
 
     // Supprimer une catégorie
-    app.delete('/categories/:categoryId', async (req, res) => {
+    app.delete('/api/categories/:categoryId', async (req, res) => {
         const { categoryId } = req.params;
         const _id = new ObjectID(categoryId);
 

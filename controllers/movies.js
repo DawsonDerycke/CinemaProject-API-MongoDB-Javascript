@@ -7,14 +7,14 @@ module.exports = (app, db) => {
     const movieCollection = db.collection('movies');
 
     // Lister les films
-    app.get('/movies', async (req, res) => {
+    app.get('/api/movies', async (req, res) => {
         const movies = await movieCollection.find().toArray();
 
         res.json(movies);
     });
 
     // Lister un film
-    app.get('/movies/:movieId', async (req, res) => {
+    app.get('/api/movies/:movieId', async (req, res) => {
         const { movieId } = req.params;
         const _id = new ObjectID(movieId);
 
@@ -27,7 +27,7 @@ module.exports = (app, db) => {
     });
 
     // Ajouter un film
-    app.post('/movies', async (req, res) => {
+    app.post('/api/movies', async (req, res) => {
         const data = req.body;
         try {
             if (data.customersRatings) {
@@ -53,7 +53,7 @@ module.exports = (app, db) => {
     });
 
     // Mettre à jour un film
-    app.post('/movies/:movieId', async (req, res) => {
+    app.post('/api/movies/:movieId', async (req, res) => {
         const { movieId } = req.params;
         const data = req.body;
         const _id = new ObjectID(movieId);
@@ -79,7 +79,7 @@ module.exports = (app, db) => {
     });
 
     // Supprimer un film
-    app.delete('/movies/:movieId', async (req, res) => {
+    app.delete('/api/movies/:movieId', async (req, res) => {
         const { movieId } = req.params;
         const _id = new ObjectID(movieId);
 
@@ -92,7 +92,7 @@ module.exports = (app, db) => {
     });
 
     // Lister les films qui sont sortie ?? releaseDate = now() ?
-    app.get('/releasedNow/movies', async (req, res) => {
+    app.get('/api/releasedNow/movies', async (req, res) => {
         const reponse = await movieCollection.aggregate([
 
         ]).toArray();
@@ -101,7 +101,7 @@ module.exports = (app, db) => {
     });
 
     // Lister les notes d'un film
-    app.get('/movies/:movieId/customersRatings', async (req, res) => {
+    app.get('/api/movies/:movieId/customersRatings', async (req, res) => {
         const { movieId } = req.params;
 
         const customersRatings = await movieCollection.aggregate([
@@ -116,7 +116,7 @@ module.exports = (app, db) => {
 
     /* à refaire
     // Ajouter une note
-    app.post('/movies/:movieId/customersRatings', async (req, res) => {
+    app.post('/api/movies/:movieId/customersRatings', async (req, res) => {
         const { movieId } = req.params;
         const { rating } = req.body;
         const _id = new ObjectID(movieId);
@@ -138,7 +138,7 @@ module.exports = (app, db) => {
     });
 
     // Supprimer une note
-    app.delete('/movies/:movieId/customersRatings/:ratingId', async (req, res) => {
+    app.delete('/api/movies/:movieId/customersRatings/:ratingId', async (req, res) => {
         const { movieId, ratingId } = req.params;
         const _id = new ObjectID(movieId);
         const _ratingId = new ObjectID(ratingId);
@@ -157,7 +157,7 @@ module.exports = (app, db) => {
     });
 
     // Modifier une note
-    app.post('/movies/:movieId/customersRatings/:ratingId', async (req, res) => {
+    app.post('/api/movies/:movieId/customersRatings/:ratingId', async (req, res) => {
         const { movieId, ratingId } = req.params;
         const { rating } = req.body;
         const _id = new ObjectID(movieId);

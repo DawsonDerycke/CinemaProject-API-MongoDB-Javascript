@@ -57,6 +57,7 @@ module.exports = (app, db) => {
         const { movieId } = req.params;
         const data = req.body;
         const _id = new ObjectID(movieId);
+
         if (data.customersRatings) {
             data.customersRatings = data.customersRatings.map(c => {
                 c.rating = Double(c.rating);
@@ -100,6 +101,40 @@ module.exports = (app, db) => {
         res.json(reponse);
     });
 
+    // Lister les films et leurs catégories
+    app.get('/api/categories/movies', async (req, res) => {
+        const reponse = await movieCollection.aggregate([
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'title',
+                    foreignField: 'title',
+                    as: 'infoMovies'
+                }
+            },
+            { $unwind: '$infoMovies' },
+            { $project: { customersRatings: 0, releaseDate: 0, 'infoMovies.title': 0, } },
+        ]).toArray();
+
+        res.json(reponse);
+    });
+
+    // Lister les films et leurs clients
+    app.get('/api/categories/movies', async (req, res) => {
+        const reponse = await movieCollection.aggregate([
+            {
+                $lookup: {
+                    from: 'customers',
+                    localField: 'title',
+                    foreignField: '',
+                    as: ''
+                }
+            },
+        ]).toArray();
+
+        res.json(reponse);
+    });
+
     // Lister les notes d'un film
     app.get('/api/movies/:movieId/customersRatings', async (req, res) => {
         const { movieId } = req.params;
@@ -114,12 +149,13 @@ module.exports = (app, db) => {
         res.json(customersRatings);
     });
 
-    /* à refaire
     // Ajouter une note
     app.post('/api/movies/:movieId/customersRatings', async (req, res) => {
         const { movieId } = req.params;
-        const { rating } = req.body;
         const _id = new ObjectID(movieId);
+        let { rating } = req.body;
+
+        rating = Double(rating);
 
         const { value } = await movieCollection.findOneAndUpdate(
             { _id },
@@ -159,9 +195,11 @@ module.exports = (app, db) => {
     // Modifier une note
     app.post('/api/movies/:movieId/customersRatings/:ratingId', async (req, res) => {
         const { movieId, ratingId } = req.params;
-        const { rating } = req.body;
+        let { rating } = req.body;
         const _id = new ObjectID(movieId);
         const _ratingId = new ObjectID(ratingId);
+
+        rating = Double(rating);
 
         const { value } = await movieCollection.findOneAndUpdate(
             {
@@ -177,6 +215,6 @@ module.exports = (app, db) => {
         );
 
         res.json(value);
-    });*/
+    });
 
 };

@@ -79,16 +79,21 @@ module.exports = (app, db) => {
         res.status(204).send();
     });
 
-    // Lister les tickets utilisés
-    app.get('/api/ticketFalse/customers', async (req, res) => {
+    // Supprimer les tickets utilisés
+    app.delete('/api/ticketFalse/customers', async (req, res) => {
         const response = await customerCollection.aggregate([
             { $match: { ticket: false } },
-        ]).toArray();
+        ]).map(c => {
+            return c._id;
+        }).toArray();
 
-        // Supprimer les clients qui correspondent à la recherche
+        if (response.length < 1) {
+            return res.status(404).send({ error: 'None false ticket be found !' });
+        };
 
-        res.json(response);
-
+        await customerCollection.deleteMany({ _id: { $in: response } });
+        res.status(204).send();
     });
+
 
 };

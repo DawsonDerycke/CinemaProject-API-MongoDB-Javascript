@@ -28,7 +28,7 @@ module.exports = (app, db) => {
 
     // Ajouter une catégorie
     app.post('/api/categories', async (req, res) => {
-        const data = req.body; 
+        const data = req.body;
         try {
             data.duration = parseInt(data.duration);
 
@@ -75,6 +75,17 @@ module.exports = (app, db) => {
         };
 
         res.status(204).send();
+    });
+
+    // Lister les films qui durent moins de 2 heures
+    app.get('/api/duration/categories', async (req, res) => {
+        const reponse = await categCollection.aggregate([
+            { $project: { title: 1, category: 1, duration: 1, director: 1, actor: 1, durations: { $gte: ["$duration", 121] }, } },
+            { $match: { durations: false } },
+            { $project: { durations: 0 } },
+        ]).toArray();
+
+        res.json(reponse);
     });
 
 };

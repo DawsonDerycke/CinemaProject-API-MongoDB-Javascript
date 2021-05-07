@@ -88,12 +88,28 @@ module.exports = (app, db) => {
         }).toArray();
 
         if (response.length < 1) {
-            return res.status(404).send({ error: 'None false ticket be found !' });
+            return res.status(404).send({ error: 'No false ticket have been found !' });
         };
 
         await customerCollection.deleteMany({ _id: { $in: response } });
         res.status(204).send();
     });
 
+    // Lister les spectateurs des films
+    app.get('/api/movies/customers', async (req, res) => {
+        const reponse = await customerCollection.aggregate([
+            {
+                $lookup: {
+                    from: 'movies',
+                    localField: 'movie',
+                    foreignField: 'title',
+                    as: 'movie'
+                }
+            },
+            { $project: { ticket: 0, 'movie.releaseDate': 0,'movie.customersRatings': 0, } },
+        ]).toArray();
+
+        res.json(reponse);
+    });
 
 };

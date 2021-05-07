@@ -92,10 +92,11 @@ module.exports = (app, db) => {
         res.status(204).send();
     });
 
-    // Lister les films qui sont sortie ?? releaseDate = now() ?
-    app.get('/api/releasedNow/movies', async (req, res) => {
+    // Lister les films par date de sortie
+    app.get('/api/released/movies', async (req, res) => {
         const reponse = await movieCollection.aggregate([
-
+            { $sort: {releaseDate: 1} },
+            { $project: { _id: 0, customersRatings: 0, } },
         ]).toArray();
 
         res.json(reponse);
@@ -114,22 +115,6 @@ module.exports = (app, db) => {
             },
             { $unwind: '$infoMovies' },
             { $project: { customersRatings: 0, releaseDate: 0, 'infoMovies.title': 0, } },
-        ]).toArray();
-
-        res.json(reponse);
-    });
-
-    // Lister les films et leurs clients
-    app.get('/api/categories/movies', async (req, res) => {
-        const reponse = await movieCollection.aggregate([
-            {
-                $lookup: {
-                    from: 'customers',
-                    localField: 'title',
-                    foreignField: '',
-                    as: ''
-                }
-            },
         ]).toArray();
 
         res.json(reponse);

@@ -1,4 +1,5 @@
 const { Db, ObjectID, Double } = require('mongodb');
+const { movieSchema, ratingSchema } = require('./validator');
 
 module.exports = (app, db) => {
     if (!(db instanceof Db)) {
@@ -30,11 +31,11 @@ module.exports = (app, db) => {
     app.post('/api/movies', async (req, res) => {
         const data = req.body;
         try {
-            if (data.customersRatings) {
-                data.customersRatings = data.customersRatings.map(c => {
-                    c.rating = Double(c.rating);
-                    return c;
-                });
+            const { error } = movieSchema.validate(req.body);
+
+            if (error != null) {
+                const firstError = error.details[0];
+                return res.status(404).json({ error: firstError.message });
             }
             data.price = Double(data.price);
             data.releaseDate = new Date(data.releaseDate);
@@ -58,6 +59,12 @@ module.exports = (app, db) => {
         const data = req.body;
         const _id = new ObjectID(movieId);
 
+        const { error } = movieSchema.validate(req.body);
+
+        if (error != null) {
+            const firstError = error.details[0];
+            return res.status(404).json({ error: firstError.message });
+        }
         if (data.customersRatings) {
             data.customersRatings = data.customersRatings.map(c => {
                 c.rating = Double(c.rating);
@@ -95,7 +102,7 @@ module.exports = (app, db) => {
     // Lister les films par date de sortie
     app.get('/api/released/movies', async (req, res) => {
         const reponse = await movieCollection.aggregate([
-            { $sort: {releaseDate: 1} },
+            { $sort: { releaseDate: 1 } },
             { $project: { _id: 0, customersRatings: 0, } },
         ]).toArray();
 
@@ -140,6 +147,12 @@ module.exports = (app, db) => {
         const _id = new ObjectID(movieId);
         let { rating } = req.body;
 
+        const { error } = ratingSchema.validate(req.body);
+
+        if (error != null) {
+            const firstError = error.details[0];
+            return res.status(404).json({ error: firstError.message });
+        }
         rating = Double(rating);
 
         const { value } = await movieCollection.findOneAndUpdate(
@@ -184,6 +197,12 @@ module.exports = (app, db) => {
         const _id = new ObjectID(movieId);
         const _ratingId = new ObjectID(ratingId);
 
+        const { error } = ratingSchema.validate(req.body);
+
+        if (error != null) {
+            const firstError = error.details[0];
+            return res.status(404).json({ error: firstError.message });
+        }
         rating = Double(rating);
 
         const { value } = await movieCollection.findOneAndUpdate(

@@ -1,4 +1,5 @@
 const { Db, ObjectID } = require('mongodb');
+const { categorySchema } = require('./validator');
 
 module.exports = (app, db) => {
     if (!(db instanceof Db)) {
@@ -30,6 +31,12 @@ module.exports = (app, db) => {
     app.post('/api/categories', async (req, res) => {
         const data = req.body;
         try {
+            const { error } = categorySchema.validate(req.body);
+
+            if (error != null) {
+                const firstError = error.details[0];
+                return res.status(404).json({ error: firstError.message });
+            }
             data.duration = parseInt(data.duration);
 
             const response = await categCollection.insertOne(data);
@@ -50,6 +57,13 @@ module.exports = (app, db) => {
         const { categoryId } = req.params;
         const data = req.body;
         const _id = new ObjectID(categoryId);
+
+        const { error } = categorySchema.validate(req.body);
+
+        if (error != null) {
+            const firstError = error.details[0];
+            return res.status(404).json({ error: firstError.message });
+        }
         data.duration = parseInt(data.duration);
 
         const response = await categCollection.findOneAndUpdate(

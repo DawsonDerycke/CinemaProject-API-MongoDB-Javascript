@@ -4,6 +4,8 @@ const passport = require('passport');
 // Permet de ne jamais avoir le même mot de passe
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
+const { userSchema } = require('./validator');
+
 const signature = 'Signature|@Projet147';
 
 module.exports = (app, db) => {
@@ -28,7 +30,7 @@ module.exports = (app, db) => {
 
                 const token = jwt.sign(user, signature);
 
-                return res.json({user, token});
+                return res.json({ user, token });
 
             });
         })(req, res);
@@ -59,6 +61,12 @@ module.exports = (app, db) => {
     app.post('/api/users', async (req, res) => {
         const data = req.body;
         try {
+            const { error } = userSchema.validate(req.body);
+
+            if (error != null) {
+                const firstError = error.details[0];
+                return res.status(404).json({ error: firstError.message });
+            }
             data.password = bcrypt.hashSync(data.password, saltRounds);
 
             const response = await userCollection.insertOne(data);
@@ -80,6 +88,13 @@ module.exports = (app, db) => {
         const { userId } = req.params;
         const data = req.body;
         const _id = new ObjectID(userId);
+        
+        const { error } = userSchema.validate(req.body);
+        
+        if (error != null) {
+            const firstError = error.details[0];
+            return res.status(404).json({ error: firstError.message });
+        }
         data.password = bcrypt.hashSync(data.password, saltRounds);
 
         const response = await userCollection.findOneAndUpdate(

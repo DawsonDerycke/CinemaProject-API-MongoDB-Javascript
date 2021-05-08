@@ -1,4 +1,5 @@
 const { Db, ObjectID } = require('mongodb');
+const { customerSchema } = require('./validator');
 
 module.exports = (app, db) => {
     if (!(db instanceof Db)) {
@@ -30,6 +31,12 @@ module.exports = (app, db) => {
     app.post('/api/customers', async (req, res) => {
         const data = req.body;
         try {
+            const { error } = customerSchema.validate(req.body);
+
+            if (error != null) {
+                const firstError = error.details[0];
+                return res.status(404).json({ error: firstError.message });
+            }
             data.ticket = data.ticket === 'true';
             data.year = parseInt(data.year);
 
@@ -51,6 +58,13 @@ module.exports = (app, db) => {
         const { customerId } = req.params;
         const data = req.body;
         const _id = new ObjectID(customerId);
+
+        const { error } = customerSchema.validate(req.body);
+
+        if (error != null) {
+            const firstError = error.details[0];
+            return res.status(404).json({ error: firstError.message });
+        }
         data.ticket = data.ticket === 'true';
         data.year = parseInt(data.year);
 
@@ -106,7 +120,7 @@ module.exports = (app, db) => {
                     as: 'movie'
                 }
             },
-            { $project: { ticket: 0, 'movie.releaseDate': 0,'movie.customersRatings': 0, } },
+            { $project: { ticket: 0, 'movie.releaseDate': 0, 'movie.customersRatings': 0, } },
         ]).toArray();
 
         res.json(reponse);

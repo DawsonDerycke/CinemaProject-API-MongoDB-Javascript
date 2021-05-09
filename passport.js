@@ -4,7 +4,7 @@ const localStrategy = require('passport-local').Strategy;
 const passportJWT = require('passport-jwt');
 const JWTStrategy = passportJWT.Strategy;
 const extractJWT = passportJWT.ExtractJwt;
-const signature = 'Signature|@Projet147';
+const { signature } = require('./controllers/validator');
 
 function myPassportLocal(db) {
     const userCollection = db.collection('users');

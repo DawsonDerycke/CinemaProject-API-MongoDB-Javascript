@@ -1,3 +1,4 @@
+const signature = 'Signature|@Projet147';
 const joi = require('joi');
 
 const userSchema = joi.object({
@@ -33,6 +34,7 @@ const ratingSchema = joi.object({
 });
 
 module.exports = {
+    signature,
     userSchema,
     categorySchema,
     customerSchema,

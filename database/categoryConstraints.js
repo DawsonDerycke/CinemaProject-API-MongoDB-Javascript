@@ -3,7 +3,7 @@ module.exports = async (db) => {
     const existingCollections = await db.listCollections().toArray();
     if (existingCollections.some(c => c.name === collectionName)) {
         return;
-    };
+    }; 
 
     await db.createCollection(collectionName, {
         validator: {

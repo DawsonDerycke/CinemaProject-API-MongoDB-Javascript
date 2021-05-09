@@ -9,7 +9,7 @@ const { myPassportLocal, myPassportJWT } = require('./passport');
 app.use(bodyParser.urlencoded({ extended: true }));
 
 (async () => {
-    app.use('^/api', passport.authenticate('jwt', { session: false}));
+    app.use('^/api', passport.authenticate('jwt', { session: false }));
 
     const db = await dbConnexion();
 
@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
     const movies = require('./controllers/movies');
     const categories = require('./controllers/categories');
     const users = require('./controllers/users');
-    
+
     // Controllers
     customers(app, db);
     movies(app, db);

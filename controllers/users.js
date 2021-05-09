@@ -4,9 +4,7 @@ const passport = require('passport');
 // Permet de ne jamais avoir le même mot de passe
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
-const { userSchema } = require('./validator');
-
-const signature = 'Signature|@Projet147';
+const { userSchema, signature } = require('./validator');
 
 module.exports = (app, db) => {
     if (!(db instanceof Db)) {

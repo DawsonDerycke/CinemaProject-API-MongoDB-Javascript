@@ -4,8 +4,8 @@ const customerConstraints = require('./customerConstraints');
 const categoryConstraints = require('./categoryConstraints');
 const userConstraints = require('./userConstraints');
 
-const url = 'mongodb://localhost:27033';
-const dbName = 'dahba_dawson';
+const url = 'mongodb://localhost:27017';
+const dbName = 'p_movies';
 
 const getDb = async () => {
     let db;

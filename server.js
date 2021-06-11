@@ -5,11 +5,15 @@ const port = 3000;
 const passport = require('passport');
 const dbConnexion = require("./database/connexion");
 const { myPassportLocal, myPassportJWT } = require('./passport');
+const cors = require('cors');
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 (async () => {
-    app.use('^/api', passport.authenticate('jwt', { session: false }));
+    app.use(cors());
+
+   // app.use('^/api', passport.authenticate('jwt', { session: false }));
 
     const db = await dbConnexion();
 

@@ -28,7 +28,7 @@ module.exports = (app, db) => {
     });
 
     // Ajouter un client
-    app.post('/api/customers', async (req, res) => {
+    app.post('/api/customers/', async (req, res) => {
         const data = req.body;
         try {
             const { error } = customerSchema.validate(req.body);
@@ -58,7 +58,7 @@ module.exports = (app, db) => {
         const { customerId } = req.params;
         const data = req.body;
         const _id = new ObjectID(customerId);
-
+        console.log(data, 'oto', _id);
         const { error } = customerSchema.validate(req.body);
 
         if (error != null) {

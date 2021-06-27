@@ -55,9 +55,10 @@ module.exports = (app, db) => {
     // Mettre à jour une catégorie
     app.post('/api/categories/:categoryId', async (req, res) => {
         const { categoryId } = req.params;
+        delete req.body._id;
+
         const data = req.body;
         const _id = new ObjectID(categoryId);
-
         const { error } = categorySchema.validate(req.body);
 
         if (error != null) {

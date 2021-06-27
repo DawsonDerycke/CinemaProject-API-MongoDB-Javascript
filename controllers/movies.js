@@ -32,16 +32,15 @@ module.exports = (app, db) => {
         const data = req.body;
         try {
             const { error } = movieSchema.validate(req.body);
-
+            
             if (error != null) {
                 const firstError = error.details[0];
                 return res.status(404).json({ error: firstError.message });
             }
             data.price = Double(data.price);
             data.releaseDate = new Date(data.releaseDate);
-
+            
             const response = await movieCollection.insertOne(data);
-
             if (response.result.n !== 1 || response.result.ok !== 1) {
                 return res.status(400).json({ error: 'Impossible to create the movie !' });
             };
@@ -56,6 +55,8 @@ module.exports = (app, db) => {
     // Mettre à jour un film
     app.post('/api/movies/:movieId', async (req, res) => {
         const { movieId } = req.params;
+        delete req.body._id;
+
         const data = req.body;
         const _id = new ObjectID(movieId);
 

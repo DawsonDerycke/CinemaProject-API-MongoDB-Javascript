@@ -56,9 +56,10 @@ module.exports = (app, db) => {
     // Mettre à jour un client
     app.post('/api/customers/:customerId', async (req, res) => {
         const { customerId } = req.params;
+        delete req.body._id;
+        
         const data = req.body;
         const _id = new ObjectID(customerId);
-        console.log(data, 'oto', _id);
         const { error } = customerSchema.validate(req.body);
 
         if (error != null) {

@@ -38,6 +38,6 @@ app.use(bodyParser.json());
     });
 
     app.listen(port, () => {
-        console.log(`Movies app listening at 172.17.118.1:${port}`)
+        console.log(`Movies app listening at http://localhost:${port}`)
     });
 })();

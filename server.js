@@ -38,6 +38,6 @@ app.use(bodyParser.json());
     });
 
     app.listen(port, () => {
-        console.log(`Movies app listening at http://localhost:${port}`)
+        console.log(`Movies app listening at https://projet-mongodb.herokuapp.com:${port}`)
     });
 })();

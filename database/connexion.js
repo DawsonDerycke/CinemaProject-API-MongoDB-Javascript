@@ -4,7 +4,7 @@ const customerConstraints = require('./customerConstraints');
 const categoryConstraints = require('./categoryConstraints');
 const userConstraints = require('./userConstraints');
 
-const url = 'https://projet-mongodb.herokuapp.com:27017';
+const url = '172.17.118.1:27017';
 const dbName = 'p_movies';
 
 const getDb = async () => {
